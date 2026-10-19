@@ -22,11 +22,12 @@ export function selectSite(hostname: string, env: CmsEnv = import.meta.env): Sit
   const tenant = (env.VITE_CMS_TENANT_DOMAIN ?? '').trim().toLowerCase().replace(/^\.+|\.+$/g, '');
   const host = hostname.trim().toLowerCase().replace(/\.+$/, '');
 
-  // Platform subdomains and custom domains on a shared deployment: always look up when a
-  // tenant domain is configured. VITE_CMS_SITE_KEY is only the fallback for single-site deploys.
+  // Customer sites on the hosting domain (e.g. acme.sites.ticketoc.com).
   if (tenant && host.endsWith(`.${tenant}`)) return { kind: 'lookup', apiUrl, hostname: host };
-  if (tenant && host) return { kind: 'lookup', apiUrl, hostname: host };
+  // Main marketing hostname: use the baked-in site key (no /resolve, no TXT).
   if (siteKey) return { kind: 'fixed', config: { apiUrl, siteKey } };
+  // Shared deploy with no site key: every hostname is a custom domain to look up.
+  if (tenant && host) return { kind: 'lookup', apiUrl, hostname: host };
   return null;
 }
 

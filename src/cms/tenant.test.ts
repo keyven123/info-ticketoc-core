@@ -12,10 +12,10 @@ describe('selectSite', () => {
     expect(selectSite('Acme.Sites.Example.com', env)).toEqual({ kind: 'lookup', apiUrl: api, hostname: 'acme.sites.example.com' });
   });
 
-  it('looks up custom domains and other hostnames when a tenant domain is set', () => {
-    expect(selectSite('sites.example.com', env)).toEqual({ kind: 'lookup', apiUrl: api, hostname: 'sites.example.com' });
-    expect(selectSite('www.customer.com', env)).toEqual({ kind: 'lookup', apiUrl: api, hostname: 'www.customer.com' });
-    expect(selectSite('evil-sites.example.com', env)).toEqual({ kind: 'lookup', apiUrl: api, hostname: 'evil-sites.example.com' });
+  it('uses the site key for the main hostname and other non-tenant hosts', () => {
+    expect(selectSite('sites.example.com', env)).toEqual({ kind: 'fixed', config: { apiUrl: api, siteKey: 'main' } });
+    expect(selectSite('www.customer.com', env)).toEqual({ kind: 'fixed', config: { apiUrl: api, siteKey: 'main' } });
+    expect(selectSite('marketing.example.com', env)).toEqual({ kind: 'fixed', config: { apiUrl: api, siteKey: 'main' } });
   });
 
   it('looks up every hostname on a shared deployment without a site key', () => {
