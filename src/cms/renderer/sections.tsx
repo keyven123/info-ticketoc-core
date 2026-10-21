@@ -16,6 +16,7 @@ import {
   media,
   obj,
   str,
+  textStyle,
   useMediaUrl,
   widthClass,
   type SectionStyle,
@@ -234,11 +235,11 @@ export function Hero({ props, s }: SectionProps) {
                 />
               ) : (
                 <span className="block text-5xl md:text-7xl font-black leading-tight">
-                  <span className={titleClass(s)}>{heading}</span>
+                  <span className={titleClass(s)} style={textStyle(props, "heading")}>{heading}</span>
                   {highlight && (
                     <>
                       {" "}
-                      <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))}>{highlight}</span>
+                      <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))} style={textStyle(props, "heading_highlight")}>{highlight}</span>
                     </>
                   )}
                 </span>
@@ -246,7 +247,7 @@ export function Hero({ props, s }: SectionProps) {
             </h1>
 
             {str(props.description) && (
-              <p className={cn("text-lg md:text-xl mb-8 max-w-xl mx-auto leading-relaxed animate-fade-in-delay", s.light ? "text-gray-600" : "text-gray-500 dark:text-gray-300", hasMedia && "lg:mx-0")}>
+              <p className={cn("text-lg md:text-xl mb-8 max-w-xl mx-auto leading-relaxed animate-fade-in-delay", s.light ? "text-gray-600" : "text-gray-500 dark:text-gray-300", hasMedia && "lg:mx-0")} style={textStyle(props, "description")}>
                 {str(props.description)}
               </p>
             )}
@@ -343,7 +344,7 @@ export function FeatureGrid({ props, s }: SectionProps) {
                     </span>
                   )}
                 </div>
-                <h3 className={cn("text-lg font-semibold leading-snug", titleClass(s))}>{str(item.title)}</h3>
+                <h3 className={cn("text-lg font-semibold leading-snug", titleClass(s))} style={textStyle(item, "title")}>{str(item.title)}</h3>
                 {str(item.description) && <p className={cn("mt-2 text-sm leading-relaxed", bodyClass(s))}>{str(item.description)}</p>}
                 <div
                   className={cn(
@@ -377,7 +378,7 @@ export function FeatureGrid({ props, s }: SectionProps) {
                   </div>
                 )
               )}
-              <h3 className={cn("text-xl font-bold mb-3", titleClass(s))}>{str(item.title)}</h3>
+              <h3 className={cn("text-xl font-bold mb-3", titleClass(s))} style={textStyle(item, "title")}>{str(item.title)}</h3>
               {str(item.description) && (
                 <p className={cn("leading-relaxed", bodyClass(s), variant === "icon_tile" && "text-sm", variant === "detailed" && list(item.bullets).length > 0 && "mb-4")}>
                   {str(item.description)}
@@ -455,11 +456,11 @@ export function Cta({ props, s }: SectionProps) {
           </div>
         )}
         <h2 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 animate-slide-up">
-          <span className={s.light ? "text-gray-900" : "text-white"}>{str(props.heading)}</span>
+          <span className={s.light ? "text-gray-900" : "text-white"} style={textStyle(props, "heading")}>{str(props.heading)}</span>
           {str(props.heading_highlight) && (
             <>
               <br />
-              <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))}>{str(props.heading_highlight)}</span>
+              <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))} style={textStyle(props, "heading_highlight")}>{str(props.heading_highlight)}</span>
             </>
           )}
         </h2>
@@ -500,11 +501,11 @@ export function TextImage({ props, s }: SectionProps) {
             </div>
           )}
           <h2 className="text-3xl md:text-5xl font-black mb-6">
-            <span className={titleClass(s)}>{str(props.heading)}</span>
+            <span className={titleClass(s)} style={textStyle(props, "heading")}>{str(props.heading)}</span>
             {str(props.heading_highlight) && (
               <>
                 {" "}
-                <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))}>{str(props.heading_highlight)}</span>
+                <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))} style={textStyle(props, "heading_highlight")}>{str(props.heading_highlight)}</span>
               </>
             )}
           </h2>
@@ -606,7 +607,7 @@ export function RichTextSection({ props, s }: SectionProps) {
   return (
     <SectionShell s={s}>
       <div className={cn(widthClass(s.width === "normal" ? "narrow" : s.width), s.align === "center" && "text-center")}>
-        {str(props.heading) && <h2 className={cn("text-3xl md:text-4xl font-black mb-6", titleClass(s))}>{str(props.heading)}</h2>}
+        {str(props.heading) && <h2 className={cn("text-3xl md:text-4xl font-black mb-6", titleClass(s))} style={textStyle(props, "heading")}>{str(props.heading)}</h2>}
         <RichText html={props.body} className={cn("text-lg", bodyClass(s))} />
       </div>
     </SectionShell>
@@ -658,7 +659,7 @@ export function LogoStrip({ props, s }: SectionProps) {
   const logos = list(props.logos);
   return (
     <SectionShell s={s}>
-      {str(props.heading) && <p className={cn("mb-10 text-center text-sm font-semibold uppercase tracking-widest", s.light ? "text-gray-500" : "text-zinc-400")}>{str(props.heading)}</p>}
+      {str(props.heading) && <p className={cn("mb-10 text-center text-sm font-semibold uppercase tracking-widest", s.light ? "text-gray-500" : "text-zinc-400")} style={textStyle(props, "heading")}>{str(props.heading)}</p>}
       {logos.length === 0 ? (
         <MissingMedia label="Add logos" className="h-24" />
       ) : (

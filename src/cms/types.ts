@@ -6,6 +6,10 @@ export interface MediaValue {
   alt?: string;
   width?: number;
   height?: number;
+  /** How wide the image is drawn on the page, in pixels. */
+  display_width?: number;
+  /** How tall the image is drawn on the page, in pixels. */
+  display_height?: number;
 }
 
 export interface LinkValue {

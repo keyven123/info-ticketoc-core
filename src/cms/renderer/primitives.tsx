@@ -20,6 +20,58 @@ export const useRender = () => useContext(RenderContext);
 /* ---------- value helpers (content is untrusted JSON; never assume shapes) ---------- */
 
 export const str = (value: unknown): string => (typeof value === "string" ? value : typeof value === "number" ? String(value) : "");
+
+const TEXT_FONT_FAMILY: Record<string, string> = {
+  sans: "ui-sans-serif, system-ui, sans-serif",
+  serif: "Georgia, serif",
+  mono: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  display: "Palatino, serif",
+};
+
+/** Inline style for a text field, read from sibling keys such as `heading__font`. */
+export function textStyle(source: unknown, key: string): CSSProperties | undefined {
+  if (!source || typeof source !== "object" || Array.isArray(source)) return undefined;
+  const record = source as Record<string, unknown>;
+  const fontValue = record[`${key}__font`];
+  const styleValue = record[`${key}__style`];
+  const colorValue = record[`${key}__color`];
+  const font = typeof fontValue === "string" ? fontValue : "";
+  const style = typeof styleValue === "string" ? styleValue : "";
+  const color = typeof colorValue === "string" ? colorValue : "";
+  const css: CSSProperties = {};
+  if (TEXT_FONT_FAMILY[font]) css.fontFamily = TEXT_FONT_FAMILY[font];
+  if (style === "regular") {
+    css.fontStyle = "normal";
+    css.fontWeight = 400;
+  } else if (style === "italic") css.fontStyle = "italic";
+  else if (style === "bold") css.fontWeight = 700;
+  else if (style === "bold-italic") {
+    css.fontStyle = "italic";
+    css.fontWeight = 700;
+  }
+  if (/^#[0-9a-f]{6}$/i.test(color)) css.color = color.toLowerCase();
+  const sizeValue = record[`${key}__size`];
+  const size = typeof sizeValue === "number" ? sizeValue : typeof sizeValue === "string" && sizeValue.trim() !== "" ? Number(sizeValue) : Number.NaN;
+  if ([12, 14, 16, 18, 20, 24, 32, 40, 48, 64, 80, 96].includes(size)) css.fontSize = `${size}px`;
+  return Object.keys(css).length ? css : undefined;
+}
+
+function displayPixels(value: unknown): number | undefined {
+  const n = typeof value === "number" ? value : Number.NaN;
+  if (!Number.isFinite(n)) return undefined;
+  const px = Math.round(n);
+  if (px < 1 || px > 4000) return undefined;
+  return px;
+}
+
+/** Pixel size for an image on the page. Empty means the layout decides. */
+export function imageDisplayStyle(width: unknown, height: unknown): CSSProperties | undefined {
+  const w = displayPixels(width);
+  const h = displayPixels(height);
+  if (!w && !h) return undefined;
+  return { width: w ? `${w}px` : undefined, height: h ? `${h}px` : undefined, maxWidth: "100%", objectFit: "contain" };
+}
+
 export const list = <T = Record<string, unknown>,>(value: unknown): T[] => (Array.isArray(value) ? (value as T[]) : []);
 export const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {});
 
@@ -125,13 +177,13 @@ export function SectionHeader({ props, s, highlightBreak = false }: { props: Rec
       )}
       {(heading || highlight) && (
         <h2 className="text-4xl md:text-6xl font-black mb-4 animate-slide-up">
-          {heading && <span className={s.light ? "text-gray-900" : "text-white"}>{heading}</span>}
+          {heading && <span className={s.light ? "text-gray-900" : "text-white"} style={textStyle(props, "heading")}>{heading}</span>}
           {heading && highlight && (highlightBreak ? <br /> : " ")}
-          {highlight && <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))}>{highlight}</span>}
+          {highlight && <span className={cn("text-transparent bg-clip-text bg-gradient-to-r", accentGradient(s.accent))} style={textStyle(props, "heading_highlight")}>{highlight}</span>}
         </h2>
       )}
       {description && (
-        <p className={cn("text-lg max-w-2xl animate-fade-in-delay", center && "mx-auto", s.light ? "text-gray-600" : s.background === "zinc" ? "text-zinc-400" : "text-zinc-300")}>
+        <p className={cn("text-lg max-w-2xl animate-fade-in-delay", center && "mx-auto", s.light ? "text-gray-600" : s.background === "zinc" ? "text-zinc-400" : "text-zinc-300")} style={textStyle(props, "description")}>
           {description}
         </p>
       )}
@@ -247,7 +299,7 @@ export function SiteImage({ value, className, alt }: { value: unknown; className
   const m = media(value);
   const src = useMediaUrl(value);
   if (!src) return null;
-  return <img src={src} alt={alt ?? m?.alt ?? ""} width={m?.width} height={m?.height} className={className} loading="lazy" />;
+  return <img src={src} alt={alt ?? m?.alt ?? ""} width={m?.width} height={m?.height} className={className} style={imageDisplayStyle(m?.display_width, m?.display_height)} loading="lazy" />;
 }
 
 export function RichText({ html, className }: { html: unknown; className?: string }) {
